@@ -111,26 +111,23 @@ class LastfmProvider implements StatsProvider {
 		const totalPlays = tracks.reduce((s, t) => s + t.playCount, 0) || playEvents.length;
 		const totalDurationMs = tracks.reduce((s, t) => s + parseInt(t.duration, 10) * 1000, 0);
 
-    // Total duration: Last.fm doesn't provide per-track duration,
-    // estimate from average track length (3.5 min = 210000 ms) * total plays
-    const avgTrackMs = 210000;
-    ///const totalDuration = totalPlays * avgTrackMs;
-    // Last.fm DOES provide the total duration in the tracks array, so we can use that instead
-    const totalDuration = totalDurationMs;
+		// Total duration: Last.fm does provide per-track duration, and if not, we estimate from average track length (3.5 min = 210000 ms) * total plays
+		const avgTrackMs = 210000;
+		const totalDuration = totalDurationMs || totalPlays * avgTrackMs;
 
-    // Top tracks
-    const topTracks: TopTrack[] = tracks.map((t, i) => ({
-      rank: i + 1,
-      trackUri: `lfm:track:${t.artist}:${t.name}`,
-      trackName: t.name,
-      artistName: t.artist,
-      artistUri: `lfm:artist:${t.artist}`,
-      albumName: t.album ?? '',
-      albumUri: '',
-      albumArt: t.albumArt,
-      count: t.playCount,
-      durationMs: t.playCount * (parseInt(t.duration, 10) * 1000),
-    }));
+		// Top tracks
+		const topTracks: TopTrack[] = tracks.map((t, i) => ({
+			rank: i + 1,
+			trackUri: `lfm:track:${t.artist}:${t.name}`,
+			trackName: t.name,
+			artistName: t.artist,
+			artistUri: `lfm:artist:${t.artist}`,
+			albumName: t.album ?? "",
+			albumUri: "",
+			albumArt: t.albumArt,
+			count: t.playCount,
+			durationMs: t.playCount * (parseInt(t.duration, 10) * 1000),
+		}));
 
 		// Top artists
 		const topArtists: TopArtist[] = artists.map((a, i) => ({
